@@ -45,8 +45,10 @@ public class StudentController {
     return studentRepository.findById(studentId).get();
   }
 
-  @PatchMapping(value = "{studentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public Student patch(@PathVariable("studentId") long studentId, @RequestBody Student update) {
+  @PatchMapping(value = "{studentId}",
+      consumes = MediaType.APPLICATION_JSON_VALUE)
+  public Student patch(@PathVariable("studentId") long studentId,
+      @RequestBody Student update) {
     Student student = studentRepository.findById(studentId).get();
     student.patch(update);
     return studentRepository.save(student);

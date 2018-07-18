@@ -1,5 +1,9 @@
 package com.nicholaslocicero.focus.attendance.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.net.URI;
 import java.util.Date;
 import javax.annotation.PostConstruct;
@@ -18,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.stereotype.Component;
 
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(value = {"id", "created", "href"}, allowGetters = true, ignoreUnknown = true)
 @Component
 @Entity
 public class Absence {
@@ -44,6 +50,7 @@ public class Absence {
   @Column(nullable = false, updatable = false)
   private Date created;
 
+  @JsonIgnore
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "student_id", nullable = false)
   private Student student;
