@@ -2,12 +2,14 @@ package com.nicholaslocicero.focus.attendance.controller;
 
 import com.nicholaslocicero.focus.attendance.model.dao.StudentRepository;
 import com.nicholaslocicero.focus.attendance.model.entity.Student;
+import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,4 +61,9 @@ public class StudentController {
   public void delete(@PathVariable("studentId") long studentId) {
     studentRepository.delete(studentRepository.findById(studentId).get());
   }
+
+  @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Resource not found")
+  @ExceptionHandler(NoSuchElementException.class)
+  public void notFound(){}
+
 }
