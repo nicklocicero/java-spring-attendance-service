@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,6 +48,19 @@ public class AbsenceController {
             absenceRepository.save(absence);
             return ResponseEntity.created(absence.getHref()).body(absence);
           }).get();
+  }
+
+  @DeleteMapping("{absenceId}")
+  public void delete(
+      @PathVariable("studentId") long studentId,
+      @PathVariable("absenceId") long absenceId) {
+    studentRepository.findById(studentId).map(
+      student -> absenceRepository.findByStudentAndId(student, absenceId)
+        .map(absence -> {
+          absenceRepository.delete(absence);
+          return null;
+        })
+    );
   }
 
 }
