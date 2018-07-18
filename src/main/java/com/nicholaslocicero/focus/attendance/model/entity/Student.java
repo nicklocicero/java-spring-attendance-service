@@ -88,7 +88,7 @@ public class Student {
   }
 
   public URI getHref() {
-    return entityLinks.linkFor(Student.class, id).toUri();
+    return entityLinks.linkForSingleResource(Student.class, id).toUri();
   }
 
   public void patch(Student update) {
