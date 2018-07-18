@@ -20,6 +20,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Formula;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.stereotype.Component;
@@ -65,6 +66,12 @@ public class Student {
   @OrderBy("start DESC")
   private List<Absence> absences = new LinkedList<>();
 
+  @Formula("(SELECT COUNT(*) FROM absence AS ab WHERE ab.student_id = student_id)")
+  private int totalAbsences;
+
+  @Formula("(SELECT COUNT(*) FROM absence AS ab WHERE ab.student_id = student_id AND NOT ab.excused)")
+  private int unxcusedAbsences;
+
   public long getId() {
     return id;
   }
@@ -99,6 +106,14 @@ public class Student {
 
   public List<Absence> getAbsences() {
     return absences;
+  }
+
+  public int getTotalAbsences() {
+    return totalAbsences;
+  }
+
+  public int getUnxcusedAbsences() {
+    return unxcusedAbsences;
   }
 
   public URI getHref() {
