@@ -1,7 +1,9 @@
 package com.nicholaslocicero.focus.attendance.controller;
 
 import com.nicholaslocicero.focus.attendance.model.dao.StudentRepository;
+import com.nicholaslocicero.focus.attendance.model.entity.Absence;
 import com.nicholaslocicero.focus.attendance.model.entity.Student;
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.ExposesResourceFor;
@@ -34,6 +36,23 @@ public class StudentController {
   @GetMapping
   public  Iterable<Student> list() {
     return studentRepository.findAllByOrderByLastNameAscFirstNameAsc();
+  }
+
+  @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
+  public String getHtml() {
+    Iterable<Student> students = list();
+    String html = "<h1>Student Absences</h1>";
+    for (Student student : students) {
+      String studentName = "<h3>%s %s</h3><p><ul>";
+      studentName = String.format(studentName, student.getFirstName(), student.getLastName());
+      for (Absence absence : student.getAbsences()) {
+        String absenceElement = "<li>%s</li>";
+        absenceElement = String.format(absenceElement, absence.getStart());
+        studentName += absenceElement;
+      }
+      html += studentName + "</ul></p>";
+    }
+    return html;
   }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
