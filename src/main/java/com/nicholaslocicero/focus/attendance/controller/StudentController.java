@@ -1,8 +1,8 @@
 package com.nicholaslocicero.focus.attendance.controller;
 
 import com.nicholaslocicero.focus.attendance.model.dao.StudentRepository;
-import com.nicholaslocicero.focus.attendance.model.entity.Absence;
 import com.nicholaslocicero.focus.attendance.model.entity.Student;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,7 @@ import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @ExposesResourceFor(Student.class)
@@ -38,21 +40,16 @@ public class StudentController {
     return studentRepository.findAllByOrderByLastNameAscFirstNameAsc();
   }
 
-  @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
-  public String getHtml() {
-    Iterable<Student> students = list();
-    String html = "<h1>Student Absences</h1>";
-    for (Student student : students) {
-      String studentName = "<h3>%s %s</h3><p><ul>";
-      studentName = String.format(studentName, student.getFirstName(), student.getLastName());
-      for (Absence absence : student.getAbsences()) {
-        String absenceElement = "<li>%s</li>";
-        absenceElement = String.format(absenceElement, absence.getStart());
-        studentName += absenceElement;
-      }
-      html += studentName + "</ul></p>";
-    }
-    return html;
+  public List<Student> listAll() {
+    List<Student> students = new ArrayList<>();
+    studentRepository.findAll().forEach(students::add);
+    return students;
+  }
+
+  @GetMapping(value = "/list", produces = MediaType.TEXT_HTML_VALUE)
+  public ModelAndView listHtml(Model model) {
+    model.addAttribute("students", studentRepository.findAllByOrderByLastNameAscFirstNameAsc());
+    return new ModelAndView("students", model.asMap());
   }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
